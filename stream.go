@@ -2,7 +2,7 @@ package gostream
 
 type Stream[T any] interface {
 	of(T) Stream[T]
-	// mapR(func(T2) T2) Stream[T1, T2]
+	mapR(func(T2) T2) Stream[T1, T2]
 	// filter(func(T2) bool) Stream[T1, T2]
 	// sorted() Stream[T1, T2]
 	// limit(uint64) Stream[T1, T2]
