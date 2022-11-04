@@ -1,10 +1,5 @@
 package gostream
 
-// type Pipeline[T any] interface {
-// 	init(Pipeline[T])
-// 	evaluate()
-// }
-
 type StateType int
 
 const (
@@ -18,6 +13,7 @@ type Pipeline[T any] struct {
 	NextStage     *Pipeline[T]
 	Depth         int
 	StreamOpFlag  StateType
+	StreamSink    Sink[T]
 }
 
 func (p *Pipeline[T]) New(previousStage *Pipeline[T], opFlag StateType) {
@@ -34,6 +30,10 @@ func (p *Pipeline[T]) New(previousStage *Pipeline[T], opFlag StateType) {
 
 }
 
-func (h *Pipeline[T]) Map(lam func(T) T) Stream[T] {
+func (p *Pipeline[T]) Map(lam func(T) T) Stream[T] {
+	return nil
+}
+
+func (p *Pipeline[T]) Sink(downStream Sink[T]) Sink[T] {
 	return nil
 }
