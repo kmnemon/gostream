@@ -8,15 +8,15 @@ const (
 	StatefulOp
 )
 
-type Pipeline[T any] struct {
-	PreviousStage *Pipeline[T]
-	NextStage     *Pipeline[T]
+type Pipeline[T any, R any] struct {
+	PreviousStage *Pipeline[T, R]
+	NextStage     *Pipeline[T, R]
 	Depth         int
 	StreamOpFlag  StateType
-	StreamSink    Sink[T]
+	StreamSink    Sink[T, R]
 }
 
-func (p *Pipeline[T]) New(previousStage *Pipeline[T], opFlag StateType) {
+func (p *Pipeline[T, R]) New(previousStage *Pipeline[T, R], opFlag StateType) {
 	if opFlag == Head {
 		p.PreviousStage = nil
 		p.Depth = 0
@@ -30,10 +30,18 @@ func (p *Pipeline[T]) New(previousStage *Pipeline[T], opFlag StateType) {
 
 }
 
-func (p *Pipeline[T]) Map(lam func(T) T) Stream[T] {
+func (p *Pipeline[T, R]) OpWrapSink(downstream Sink[T, R]) Sink[T, R] {
+
 	return nil
 }
 
-func (p *Pipeline[T]) Sink(downStream Sink[T]) Sink[T] {
+func (p *Pipeline[T, R]) Map(mapper func(T) R) Stream[T, R] {
+	statelessPipe := Pipeline[T, R]{}
+	statelessPipe.New(p, StatelessOp)
+
+	return &statelessPipe
+}
+
+func (p *Pipeline[T, R]) Sink(downStream Sink[T, R]) Sink[T, R] {
 	return nil
 }
