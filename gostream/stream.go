@@ -6,7 +6,7 @@ type Stream[T any, R any] interface {
 	// sorted() Stream[T1, T2]
 	// limit(uint64) Stream[T1, T2]
 
-	OpWrapSink(Sink[T, R]) Sink[T, R]
+	OpWrapSink(Sink[T]) Sink[T]
 }
 
 func StreamOf[T any, R any]() Stream[T, R] {
