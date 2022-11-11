@@ -16,7 +16,7 @@ type Pipeline[T any, R any] struct {
 	StreamSink    Sink[T]
 }
 
-func (p *Pipeline[T, R]) New(previousStage *Pipeline[T, R], opFlag StateType) {
+func (p *Pipeline[T, R]) New(previousStage *Pipeline[T, R], opFlag StateType, sink Sink[T]) {
 	if opFlag == Head {
 		p.PreviousStage = nil
 		p.Depth = 0
@@ -37,7 +37,11 @@ func (p *Pipeline[T, R]) OpWrapSink(downstream Sink[T]) Sink[T] {
 
 func (p *Pipeline[T, R]) Map(mapper func(T) R) Stream[T, R] {
 	statelessPipe := Pipeline[T, R]{}
-	statelessPipe.New(p, StatelessOp)
+	s := MapSink[T, R]{
+		(*p.NextStage).StreamSink,
+		mapper,
+	}
+	statelessPipe.New(p, StatelessOp, &s)
 
 	return &statelessPipe
 }
