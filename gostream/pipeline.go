@@ -1,51 +1,81 @@
 package gostream
 
-type StateType int
+type stateType int
 
 const (
-	Head StateType = iota
-	StatelessOp
-	StatefulOp
+	head stateType = iota
+	statelessOp
+	statefulOp
+	terminalOp
 )
 
-type Pipeline[T any, R any] struct {
-	PreviousStage *Pipeline[T, R]
-	NextStage     *Pipeline[T, R]
-	Depth         int
-	StreamOpFlag  StateType
-	StreamSink    Sink[T]
+type abstractPipeline[T any] interface {
+	wrapSink(sink[T]) sink[T]
+	copyInto(sink[T], []T)
 }
 
-func (p *Pipeline[T, R]) New(previousStage *Pipeline[T, R], opFlag StateType, sink Sink[T]) {
-	if opFlag == Head {
-		p.PreviousStage = nil
-		p.Depth = 0
+type pipeline[T any] struct {
+	previousStage *pipeline[T]
+	nextStage     *pipeline[T]
+	depth         int
+	streamOpFlag  stateType
+	streamSink    sink[T]
+}
+
+func (p *pipeline[T]) new(previousStage *pipeline[T], opFlag stateType, sink sink[T]) {
+	if opFlag == head {
+		p.previousStage = nil
+		p.depth = 0
 	} else {
-		p.PreviousStage.NextStage = p
-		p.PreviousStage = previousStage
-		p.Depth = p.PreviousStage.Depth + 1
+		p.previousStage.nextStage = p
+		p.previousStage = previousStage
+		p.depth = p.previousStage.depth + 1
+		p.streamSink = sink
 	}
 
-	p.StreamOpFlag = opFlag
+	p.streamOpFlag = opFlag
 
 }
 
-func (p *Pipeline[T, R]) OpWrapSink(downstream Sink[T]) Sink[T] {
-
-	return nil
+func (p *pipeline[T]) opWrapSink(downstream sink[T]) sink[T] {
+	p.streamSink.setDownStreamSink(downstream)
+	return p.streamSink
 }
 
-func (p *Pipeline[T, R]) Map(mapper func(T) R) Stream[T, R] {
-	statelessPipe := Pipeline[T, R]{}
-	s := MapSink[T, R]{
-		(*p.NextStage).StreamSink,
+func (p *pipeline[T]) Map(mapper func(T) T) stream[T] {
+	statelessPipe := pipeline[T]{}
+	s := mapSink[T]{
+		nil,
 		mapper,
 	}
-	statelessPipe.New(p, StatelessOp, &s)
+	statelessPipe.new(p, statelessOp, &s)
 
 	return &statelessPipe
 }
 
-func (p *Pipeline[T, R]) Sink(downStream Sink[T]) Sink[T] {
-	return nil
+func (p *pipeline[T]) ForEach(mapper func(T)) {
+	terminalPipe := pipeline[T]{}
+	s := forEachSink[T]{
+		mapper,
+	}
+	terminalPipe.new(p, terminalOp, &s)
+
+	sink := p.wrapSink(&s)
+	p.copyInto(sink, nil)
+}
+
+func (p *pipeline[T]) wrapSink(sink sink[T]) sink[T] {
+	for ; p.depth > 0; p = p.previousStage {
+		sink = p.opWrapSink(sink)
+	}
+
+	return sink
+}
+
+func (p *pipeline[T]) copyInto(wrapSink sink[T], slice []T) {
+	wrapSink.begin(len(slice))
+	for _, s := range slice {
+		wrapSink.accept(s)
+	}
+	wrapSink.end()
 }
