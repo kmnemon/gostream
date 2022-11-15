@@ -1,5 +1,13 @@
 package gostream
 
-func abc() {
+import "fmt"
 
+type AA struct{
+	aa int
+}
+
+
+func abc() {
+	a := AA{ 3}
+	fmt.Println(a)
 }

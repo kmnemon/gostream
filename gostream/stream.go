@@ -10,8 +10,9 @@ type stream[T any] interface {
 	// OpWrapSink(Sink[T]) Sink[T]
 }
 
-func StreamOf[T any](slice []T) stream[T] {
+func StreamOf[T any](sourceData []T) stream[T] {
 	p := pipeline[T]{}
-	p.new(nil, head, nil)
+	p.init(nil, head, nil)
+	p.sourceData = sourceData
 	return &p
 }
