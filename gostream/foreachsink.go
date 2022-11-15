@@ -1,6 +1,8 @@
 package gostream
 
-type forEachSink[T any] struct {
+import "golang.org/x/exp/constraints"
+
+type forEachSink[T constraints.Ordered] struct {
 	mapper func(T)
 }
 

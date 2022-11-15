@@ -6,11 +6,13 @@ import (
 )
 
 func TestTest(t *testing.T) {
-	a := []int{1, 2, 3, 4, 5}
+	a := []int{6, 5, 3, 4, 5}
 
-	StreamOf(a).Map(func(x int) int {
-		return x * 2
-	}).ForEach(func(x int) {
-		fmt.Println(x)
-	})
+	StreamOf(a).
+		Map(func(x int) int {
+			return x * 3
+		}).
+		ForEach(func(x int) {
+			fmt.Println(x)
+		})
 }

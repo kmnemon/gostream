@@ -1,6 +1,8 @@
 package gostream
 
-type sink[T any] interface {
+import "golang.org/x/exp/constraints"
+
+type sink[T constraints.Ordered] interface {
 	begin(int)
 	accept(T)
 	end()
@@ -8,9 +10,3 @@ type sink[T any] interface {
 
 	setDownStreamSink(sink[T])
 }
-
-
-
-
-
-

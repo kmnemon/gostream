@@ -1,20 +1,22 @@
 package gostream
 
+import "golang.org/x/exp/constraints"
+
 type stateType int
 
 const (
 	head stateType = iota
 	statelessOp
 	statefulOp
-	terminalOp
 )
 
-type abstractPipeline[T any] interface {
+type abstractPipeline[T constraints.Ordered] interface {
 	wrapSink(sink[T]) sink[T]
 	copyInto(sink[T], []T)
+	evaluate()
 }
 
-type pipeline[T any] struct {
+type pipeline[T constraints.Ordered] struct {
 	previousStage *pipeline[T]
 	nextStage     *pipeline[T]
 	sourceStage   *pipeline[T]
@@ -58,14 +60,22 @@ func (p *pipeline[T]) Map(mapper func(T) T) stream[T] {
 }
 
 func (p *pipeline[T]) ForEach(mapper func(T)) {
-	terminalPipe := pipeline[T]{}
 	s := forEachSink[T]{
 		mapper,
 	}
-	terminalPipe.init(p, terminalOp, &s)
 
-	sink := p.wrapSink(&s)
-	p.copyInto(sink, p.sourceStage.sourceData)
+	p.evaluate(&s)
+
+}
+
+func (p *pipeline[T]) Sorted() stream[T] {
+	// statefulPipe := pipeline[T]{}
+	// s := sortingSink[T]{}
+	return nil
+}
+
+func (p *pipeline[T]) evaluate(s sink[T]) {
+	p.copyInto(p.wrapSink(s), p.sourceStage.sourceData)
 }
 
 func (p *pipeline[T]) wrapSink(sink sink[T]) sink[T] {
