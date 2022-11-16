@@ -19,8 +19,12 @@ func (s *filterSink[T]) end() {
 	s.downstream.end()
 }
 
+func (s *filterSink[T]) isCancellationWasRequested() bool {
+	return s.downstream.isCancellationWasRequested()
+}
+
 func (s *filterSink[T]) cancellationRequested() bool {
-	return false
+	return s.downstream.cancellationRequested()
 }
 
 func (s *filterSink[T]) setDownStreamSink(downstream sink[T]) {

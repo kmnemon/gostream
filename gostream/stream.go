@@ -7,7 +7,7 @@ type stream[T any] interface {
 	SortedWith(func(T, T) bool) stream[T]
 	Filter(func(T) bool) stream[T]
 	Limit(int) stream[T]
-	// FindFirst()
+	FindFirst() T
 }
 
 func StreamOf[T any](sourceData []T) stream[T] {

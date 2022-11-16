@@ -14,6 +14,10 @@ func (s *forEachSink[T]) accept(u T) {
 func (s *forEachSink[T]) end() {
 }
 
+func (s *forEachSink[T]) isCancellationWasRequested() bool {
+	return false
+}
+
 func (s *forEachSink[T]) cancellationRequested() bool {
 	return false
 }

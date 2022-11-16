@@ -108,6 +108,12 @@ func (p *pipeline[T]) Limit(maxSize int) stream[T] {
 	return &statelessPipe
 }
 
+func (p *pipeline[T]) FindFirst() T {
+	s := findFirstSink[T]{}
+	p.evaluate(&s)
+	return s.result
+}
+
 func (p *pipeline[T]) evaluate(s sink[T]) {
 	p.copyInto(p.wrapSink(s), p.sourceStage.sourceData)
 }

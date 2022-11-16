@@ -29,16 +29,30 @@ func (s *sortingSink[T]) end() {
 
 	s.downstream.begin(len(s.list))
 
-	for _, v := range s.list {
-		s.downstream.accept(v)
+	if !s.isCancellationWasRequested() {
+		for _, v := range s.list {
+			s.downstream.accept(v)
+		}
+	} else {
+		for _, v := range s.list {
+			if s.cancellationRequested() {
+				break
+			}
+			s.downstream.accept(v)
+		}
+
 	}
 
 	s.downstream.end()
 	s.list = nil
 }
 
+func (s *sortingSink[T]) isCancellationWasRequested() bool {
+	return s.downstream.isCancellationWasRequested()
+}
+
 func (s *sortingSink[T]) cancellationRequested() bool {
-	return false
+	return s.downstream.cancellationRequested()
 }
 
 func (s *sortingSink[T]) setDownStreamSink(downstream sink[T]) {

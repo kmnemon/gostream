@@ -18,8 +18,12 @@ func (s *mapSink[T]) end() {
 	s.downstream.end()
 }
 
+func (s *mapSink[T]) isCancellationWasRequested() bool {
+	return s.downstream.isCancellationWasRequested()
+}
+
 func (s *mapSink[T]) cancellationRequested() bool {
-	return false
+	return s.downstream.cancellationRequested()
 }
 
 func (s *mapSink[T]) setDownStreamSink(downstream sink[T]) {

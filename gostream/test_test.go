@@ -13,7 +13,7 @@ type AA struct {
 func TestTest(t *testing.T) {
 	a := []int{6, 5, 3, 4, 5}
 
-	StreamOf(a).
+	x := StreamOf(a).
 		Filter(func(x int) bool {
 			return x <= 5
 		}).
@@ -22,9 +22,9 @@ func TestTest(t *testing.T) {
 			return x * 3
 		}).
 		Sorted().
-		ForEach(func(x int) {
-			fmt.Println(x)
-		})
+		FindFirst()
+
+	fmt.Println(x)
 
 	// b := []AA{
 	// 	{1, 2},
