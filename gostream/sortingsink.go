@@ -6,9 +6,9 @@ import (
 )
 
 type sortingSink[T any] struct {
-	downstream sink[T]
-	list       []T
 	less       func(T, T) bool
+	list       []T
+	downstream sink[T]
 }
 
 func (s *sortingSink[T]) begin(size int) {

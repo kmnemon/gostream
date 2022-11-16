@@ -1,6 +1,6 @@
 package gostream
 
-type forEachSink [T any]struct {
+type forEachSink[T any] struct {
 	mapper func(T)
 }
 

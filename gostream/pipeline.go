@@ -8,13 +8,13 @@ const (
 	statefulOp
 )
 
-type abstractPipeline [T any]interface {
+type abstractPipeline[T any] interface {
 	wrapSink(sink[T]) sink[T]
 	copyInto(sink[T], []T)
 	evaluate()
 }
 
-type pipeline [T any]struct {
+type pipeline[T any] struct {
 	previousStage *pipeline[T]
 	nextStage     *pipeline[T]
 	sourceStage   *pipeline[T]
@@ -49,8 +49,8 @@ func (p *pipeline[T]) opWrapSink(downstream sink[T]) sink[T] {
 func (p *pipeline[T]) Map(mapper func(T) T) stream[T] {
 	statelessPipe := pipeline[T]{}
 	s := mapSink[T]{
-		nil,
 		mapper,
+		nil,
 	}
 	statelessPipe.init(p, statelessOp, &s)
 
@@ -77,13 +77,35 @@ func (p *pipeline[T]) Sorted() stream[T] {
 func (p *pipeline[T]) SortedWith(less func(T, T) bool) stream[T] {
 	statefulPipe := pipeline[T]{}
 	s := sortingSink[T]{
-		nil,
-		nil,
 		less,
+		nil,
+		nil,
 	}
 	statefulPipe.init(p, statefulOp, &s)
 
 	return &statefulPipe
+}
+
+func (p *pipeline[T]) Filter(predicate func(T) bool) stream[T] {
+	statelessPipe := pipeline[T]{}
+	s := filterSink[T]{
+		predicate,
+		nil,
+	}
+	statelessPipe.init(p, statefulOp, &s)
+
+	return &statelessPipe
+}
+
+func (p *pipeline[T]) Limit(maxSize int) stream[T] {
+	statelessPipe := pipeline[T]{}
+	s := limitSink[T]{
+		maxSize,
+		nil,
+	}
+	statelessPipe.init(p, statefulOp, &s)
+
+	return &statelessPipe
 }
 
 func (p *pipeline[T]) evaluate(s sink[T]) {

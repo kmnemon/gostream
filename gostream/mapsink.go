@@ -1,8 +1,8 @@
 package gostream
 
 type mapSink[T any] struct {
-	downstream sink[T]
 	mapper     func(T) T
+	downstream sink[T]
 }
 
 func (s *mapSink[T]) begin(size int) {
