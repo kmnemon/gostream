@@ -1,7 +1,5 @@
 package gostream
 
-import "golang.org/x/exp/constraints"
-
 type stateType int
 
 const (
@@ -10,13 +8,13 @@ const (
 	statefulOp
 )
 
-type abstractPipeline[T constraints.Ordered] interface {
+type abstractPipeline [T any]interface {
 	wrapSink(sink[T]) sink[T]
 	copyInto(sink[T], []T)
 	evaluate()
 }
 
-type pipeline[T constraints.Ordered] struct {
+type pipeline [T any]struct {
 	previousStage *pipeline[T]
 	nextStage     *pipeline[T]
 	sourceStage   *pipeline[T]
@@ -69,9 +67,23 @@ func (p *pipeline[T]) ForEach(mapper func(T)) {
 }
 
 func (p *pipeline[T]) Sorted() stream[T] {
-	// statefulPipe := pipeline[T]{}
-	// s := sortingSink[T]{}
-	return nil
+	statefulPipe := pipeline[T]{}
+	s := sortingSink[T]{}
+	statefulPipe.init(p, statefulOp, &s)
+
+	return &statefulPipe
+}
+
+func (p *pipeline[T]) SortedWith(less func(T, T) bool) stream[T] {
+	statefulPipe := pipeline[T]{}
+	s := sortingSink[T]{
+		nil,
+		nil,
+		less,
+	}
+	statefulPipe.init(p, statefulOp, &s)
+
+	return &statefulPipe
 }
 
 func (p *pipeline[T]) evaluate(s sink[T]) {

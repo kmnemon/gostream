@@ -1,8 +1,6 @@
 package gostream
 
-import "golang.org/x/exp/constraints"
-
-type sink[T constraints.Ordered] interface {
+type sink [T any]interface {
 	begin(int)
 	accept(T)
 	end()

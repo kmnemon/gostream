@@ -1,8 +1,6 @@
 package gostream
 
-import "golang.org/x/exp/constraints"
-
-type mapSink[T constraints.Ordered] struct {
+type mapSink[T any] struct {
 	downstream sink[T]
 	mapper     func(T) T
 }
