@@ -57,6 +57,31 @@ func (p *pipeline[T]) Map(mapper func(T) T) stream[T] {
 	return &statelessPipe
 }
 
+func (p *pipeline[T]) Reduce(binaryOperator func(T, T) T) stream[T] {
+	statelessPipe := pipeline[T]{}
+	s := reduceSink[T]{
+		binaryOperator: binaryOperator,
+		downstream:     nil,
+		isFirstValue:   true,
+	}
+	statelessPipe.init(p, statelessOp, &s)
+
+	return &statelessPipe
+}
+
+func (p *pipeline[T]) ReduceWithInitValue(i T, binaryOperator func(T, T) T) stream[T] {
+	statelessPipe := pipeline[T]{}
+	s := reduceSink[T]{
+		binaryOperator: binaryOperator,
+		downstream:     nil,
+		i:              i,
+		isFirstValue:   false,
+	}
+	statelessPipe.init(p, statelessOp, &s)
+
+	return &statelessPipe
+}
+
 func (p *pipeline[T]) ForEach(mapper func(T)) {
 	s := forEachSink[T]{
 		mapper,
@@ -112,6 +137,12 @@ func (p *pipeline[T]) FindFirst() T {
 	s := findFirstSink[T]{}
 	p.evaluate(&s)
 	return s.result
+}
+
+func (p *pipeline[T]) ToList() []T {
+	s := toListSink[T]{}
+	p.evaluate(&s)
+	return s.list
 }
 
 func (p *pipeline[T]) evaluate(s sink[T]) {

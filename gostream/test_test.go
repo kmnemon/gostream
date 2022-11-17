@@ -14,15 +14,10 @@ func TestTest(t *testing.T) {
 	a := []int{6, 5, 3, 4, 5}
 
 	x := StreamOf(a).
-		Filter(func(x int) bool {
-			return x <= 5
+		ReduceWithInitValue(1, func(x int, y int) int {
+			return x + y
 		}).
-		Limit(3).
-		Map(func(x int) int {
-			return x * 3
-		}).
-		Sorted().
-		FindFirst()
+		ToList()
 
 	fmt.Println(x)
 
@@ -43,4 +38,18 @@ func TestTest(t *testing.T) {
 	// 	ForEach(func(x AA) {
 	// 		fmt.Println(x)
 	// 	})
+
+	// ages := map[string]int{
+	// 	"rr": 1000,
+	// 	"vv": 2000,
+	// 	"cc": 500,
+	// }
+
+	// StreamOfMap(ages).Map(func(e EntrySet[string, int]) EntrySet[string, int] {
+	// 	e.V = e.V + 1
+	// 	return e
+	// }).ForEach(func(e EntrySet[string, int]) {
+	// 	fmt.Println(e)
+	// })
+
 }
