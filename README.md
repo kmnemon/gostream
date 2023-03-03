@@ -1,7 +1,7 @@
 
 ## Getting Started
-This is a library for go that use like stream style programming
-go get github/kmnemon/gostream
+This is a library for go that use like stream style programming  
+go get github/kmnemon/gostream  
 
 ## Features
 - Map(func(T) T) stream[T]
@@ -16,16 +16,17 @@ go get github/kmnemon/gostream
 - ToList() []T
 
 ## Example
+```
   a := []int{6, 5, 3, 4, 5}
 
-  x := StreamOf(a).
-    ReduceWithInitValue(1, func(x int, y int) int {
-      return x + y
-    }).
-    ToList()
+  x := StreamOf(a).  
+    ReduceWithInitValue(1, func(x int, y int) int {  
+      return x + y  
+    }).  
+    ToList()  
 
   fmt.Println(x)
-
+```
 -----------
 [7 12 15 19 24]
 
