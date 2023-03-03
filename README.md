@@ -1,7 +1,7 @@
 
 ## Getting Started
 This is a library for go that use like stream style programming  
-go get github/kmnemon/gostream  
+go get github.com/kmnemon/gostream  
 
 ## Features
 - Map(func(T) T) stream[T]
