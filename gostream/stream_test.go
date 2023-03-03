@@ -5,12 +5,7 @@ import (
 	"testing"
 )
 
-type AA struct {
-	a int
-	b int
-}
-
-func TestTest(t *testing.T) {
+func TestReduceWithInitValue(t *testing.T) {
 	a := []int{6, 5, 3, 4, 5}
 
 	x := StreamOf(a).

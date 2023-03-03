@@ -1,3 +1,3 @@
-module github/kmnemon/gostream/v1
+module github/kmnemon/gostream
 
 go 1.20
