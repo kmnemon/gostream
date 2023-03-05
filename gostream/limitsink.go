@@ -3,6 +3,7 @@ package gostream
 type limitSink[T any] struct {
 	maxSize    int
 	downstream sink[T]
+	cancel     bool
 }
 
 func (s *limitSink[T]) begin(size int) {
@@ -13,6 +14,8 @@ func (s *limitSink[T]) accept(u T) {
 	if s.maxSize > 0 {
 		s.downstream.accept(u)
 		s.maxSize--
+	} else {
+		s.cancel = true
 	}
 }
 
@@ -21,11 +24,11 @@ func (s *limitSink[T]) end() {
 }
 
 func (s *limitSink[T]) isCancellationWasRequested() bool {
-	return s.downstream.isCancellationWasRequested()
+	return true
 }
 
 func (s *limitSink[T]) cancellationRequested() bool {
-	return s.downstream.cancellationRequested()
+	return s.cancel
 }
 
 func (s *limitSink[T]) setDownStreamSink(downstream sink[T]) {

@@ -117,7 +117,7 @@ func (p *pipeline[T]) Filter(predicate func(T) bool) stream[T] {
 		predicate,
 		nil,
 	}
-	statelessPipe.init(p, statefulOp, &s)
+	statelessPipe.init(p, statelessOp, &s)
 
 	return &statelessPipe
 }
@@ -127,8 +127,9 @@ func (p *pipeline[T]) Limit(maxSize int) stream[T] {
 	s := limitSink[T]{
 		maxSize,
 		nil,
+		false,
 	}
-	statelessPipe.init(p, statefulOp, &s)
+	statelessPipe.init(p, statelessOp, &s)
 
 	return &statelessPipe
 }
@@ -143,6 +144,26 @@ func (p *pipeline[T]) ToList() []T {
 	s := toListSink[T]{}
 	p.evaluate(&s)
 	return s.list
+}
+
+func (p *pipeline[T]) Distinct() stream[T] {
+	statelessPipe := pipeline[T]{}
+	s := distinctSink[T]{}
+	statelessPipe.init(p, statelessOp, &s)
+
+	return &statelessPipe
+}
+
+func (p *pipeline[T]) DistinctWith(equal func(T, T) bool) stream[T] {
+	statelessPipe := pipeline[T]{}
+	s := distinctSink[T]{
+		equal,
+		nil,
+		nil,
+	}
+	statelessPipe.init(p, statelessOp, &s)
+
+	return &statelessPipe
 }
 
 func (p *pipeline[T]) evaluate(s sink[T]) {

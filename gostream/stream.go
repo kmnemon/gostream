@@ -11,6 +11,7 @@ type stream[T any] interface {
 	Limit(int) stream[T]
 	FindFirst() T
 	ToList() []T
+	Distinct() stream[T]
 }
 
 type EntrySet[K any, V any] struct {

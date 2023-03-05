@@ -1,13 +1,11 @@
 package gostream
 
 type findFirstSink[T any] struct {
-	result                   T
-	cancellationWasRequested bool
-	cancel                   bool
+	result T
+	cancel bool
 }
 
 func (s *findFirstSink[T]) begin(size int) {
-	s.cancellationWasRequested = true
 }
 
 func (s *findFirstSink[T]) accept(u T) {
