@@ -63,7 +63,7 @@ func (s *sortingSink[T]) sortedWith() {
 	s.list = quickSort[T](s.list, s.less)
 }
 
-// basicTypeSort
+// basicTypeLess
 func isLessBasicTypes[T any](a T, b T) bool {
 	va := reflect.ValueOf(a)
 	vb := reflect.ValueOf(b)
@@ -77,7 +77,7 @@ func isLessBasicTypes[T any](a T, b T) bool {
 	case reflect.String:
 		return va.String() < vb.String()
 	default:
-		panic("sort with wrong basic types")
+		panic("less with wrong basic types")
 	}
 }
 

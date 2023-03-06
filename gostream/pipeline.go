@@ -46,6 +46,40 @@ func (p *pipeline[T]) opWrapSink(downstream sink[T]) sink[T] {
 	return p.streamSink
 }
 
+func (p *pipeline[T]) evaluate(s sink[T]) {
+	p.copyInto(p.wrapSink(s), p.sourceStage.sourceData)
+}
+
+func (p *pipeline[T]) wrapSink(sink sink[T]) sink[T] {
+	for ; p.depth > 0; p = p.previousStage {
+		sink = p.opWrapSink(sink)
+	}
+
+	return sink
+}
+
+func (p *pipeline[T]) copyInto(wrapSink sink[T], slice []T) {
+	if len(slice) == 0 {
+		panic("do not support empty slice")
+	}
+
+	wrapSink.begin(len(slice))
+	if !wrapSink.isCancellationWasRequested() {
+		for _, v := range slice {
+			wrapSink.accept(v)
+		}
+	} else {
+		for _, v := range slice {
+			if wrapSink.cancellationRequested() {
+				break
+			}
+			wrapSink.accept(v)
+		}
+	}
+
+	wrapSink.end()
+}
+
 func (p *pipeline[T]) Map(mapper func(T) T) stream[T] {
 	statelessPipe := pipeline[T]{}
 	s := mapSink[T]{
@@ -147,41 +181,21 @@ func (p *pipeline[T]) ToList() []T {
 }
 
 func (p *pipeline[T]) Distinct() stream[T] {
-	statelessPipe := pipeline[T]{}
+	statefulPipe := pipeline[T]{}
 	s := distinctSink[T]{}
-	statelessPipe.init(p, statelessOp, &s)
+	statefulPipe.init(p, statelessOp, &s)
 
-	return &statelessPipe
+	return &statefulPipe
 }
 
 func (p *pipeline[T]) DistinctWith(equal func(T, T) bool) stream[T] {
-	statelessPipe := pipeline[T]{}
+	statefulPipe := pipeline[T]{}
 	s := distinctSink[T]{
 		equal,
 		nil,
 		nil,
 	}
-	statelessPipe.init(p, statelessOp, &s)
+	statefulPipe.init(p, statelessOp, &s)
 
-	return &statelessPipe
-}
-
-func (p *pipeline[T]) evaluate(s sink[T]) {
-	p.copyInto(p.wrapSink(s), p.sourceStage.sourceData)
-}
-
-func (p *pipeline[T]) wrapSink(sink sink[T]) sink[T] {
-	for ; p.depth > 0; p = p.previousStage {
-		sink = p.opWrapSink(sink)
-	}
-
-	return sink
-}
-
-func (p *pipeline[T]) copyInto(wrapSink sink[T], slice []T) {
-	wrapSink.begin(len(slice))
-	for _, s := range slice {
-		wrapSink.accept(s)
-	}
-	wrapSink.end()
+	return &statefulPipe
 }

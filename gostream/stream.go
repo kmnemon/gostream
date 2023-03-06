@@ -12,6 +12,7 @@ type stream[T any] interface {
 	FindFirst() T
 	ToList() []T
 	Distinct() stream[T]
+	DistinctWith(func(T, T) bool) stream[T]
 }
 
 type EntrySet[K any, V any] struct {
