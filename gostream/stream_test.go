@@ -4,6 +4,11 @@ import (
 	"testing"
 )
 
+type A struct {
+	x int
+	y int
+}
+
 func TestMap(t *testing.T) {
 	a := []int{6, 5, 3, 4, 5}
 
@@ -101,6 +106,26 @@ func TestSorted(t *testing.T) {
 	}
 }
 
+func TestSortedWith(t *testing.T) {
+	a := []A{
+		{9, 3}, {4, 6},
+	}
+
+	x := StreamOf(a).
+		SortedWith(func(a A, b A) bool {
+			return a.x < b.x
+		}).
+		ToList()
+
+	expect := []A{
+		{4, 6}, {9, 3},
+	}
+
+	if !equalSliceHelper(expect, x) {
+		t.Error("SortedWith operator has some problem")
+	}
+}
+
 func TestFilter(t *testing.T) {
 	a := []int{6, 5, 3, 4, 5}
 
@@ -141,37 +166,6 @@ func TestFindFirst(t *testing.T) {
 		t.Error("FindFirst operator has some problem")
 	}
 }
-
-// b := []AA{
-// 	{1, 2},
-// 	{3, 4},
-// }
-
-// less := func(a AA, b AA) bool {
-// 	return b.a < a.a
-// }
-
-// StreamOf(b).
-// 	// Map(func(x int) int {
-// 	// 	return x * 3
-// 	// }).
-// 	SortedWith(less).
-// 	ForEach(func(x AA) {
-// 		fmt.Println(x)
-// 	})
-
-// ages := map[string]int{
-// 	"rr": 1000,
-// 	"vv": 2000,
-// 	"cc": 500,
-// }
-
-// StreamOfMap(ages).Map(func(e EntrySet[string, int]) EntrySet[string, int] {
-// 	e.V = e.V + 1
-// 	return e
-// }).ForEach(func(e EntrySet[string, int]) {
-// 	fmt.Println(e)
-// })
 
 func equalSliceHelper[T comparable](a, b []T) bool {
 	if len(a) != len(b) {

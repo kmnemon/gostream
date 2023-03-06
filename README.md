@@ -16,6 +16,7 @@ go get github.com/kmnemon/gostream
 - Limit(int) stream[T]
 - FindFirst() T
 - ToList() []T
+- Distinct() stream[T]
 -	DistinctWith(func(T, T) bool) stream[T]
 
 ## Example
