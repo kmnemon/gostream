@@ -63,6 +63,10 @@ func (s *sortingSink[T]) sortedWith() {
 	s.list = quickSort[T](s.list, s.less)
 }
 
+func (s *sortingSink[T]) canParallel() bool {
+	return false
+}
+
 // basicTypeLess
 func isLessBasicTypes[T any](a T, b T) bool {
 	va := reflect.ValueOf(a)

@@ -80,6 +80,17 @@ func (p *pipeline[T]) copyInto(wrapSink sink[T], slice []T) {
 	wrapSink.end()
 }
 
+func (p *pipeline[T]) Parallel() stream[T] {
+	statelessPipe := pipeline[T]{}
+	s := parallelSink[T]{
+		false,
+		nil,
+	}
+	statelessPipe.init(p, statelessOp, &s)
+
+	return &statelessPipe
+}
+
 func (p *pipeline[T]) Map(mapper func(T) T) stream[T] {
 	statelessPipe := pipeline[T]{}
 	s := mapSink[T]{

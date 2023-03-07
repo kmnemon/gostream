@@ -24,3 +24,7 @@ func (s *forEachSink[T]) cancellationRequested() bool {
 
 func (s *forEachSink[T]) setDownStreamSink(downstream sink[T]) {
 }
+
+func (s *forEachSink[T]) canParallel() bool {
+	return true
+}

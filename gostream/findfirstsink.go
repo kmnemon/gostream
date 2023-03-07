@@ -26,3 +26,7 @@ func (s *findFirstSink[T]) cancellationRequested() bool {
 
 func (s *findFirstSink[T]) setDownStreamSink(downstream sink[T]) {
 }
+
+func (s *findFirstSink[T]) canParallel() bool {
+	return false
+}

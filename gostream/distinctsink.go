@@ -37,7 +37,6 @@ func (s *distinctSink[T]) end() {
 			}
 			s.downstream.accept(v)
 		}
-
 	}
 
 	s.downstream.end()
@@ -63,6 +62,10 @@ func (s *distinctSink[T]) contains(a []T, c T) bool {
 		}
 	}
 
+	return false
+}
+
+func (s *distinctSink[T]) canParallel() bool {
 	return false
 }
 

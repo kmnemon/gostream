@@ -30,3 +30,7 @@ func (s *filterSink[T]) cancellationRequested() bool {
 func (s *filterSink[T]) setDownStreamSink(downstream sink[T]) {
 	s.downstream = downstream
 }
+
+func (s *filterSink[T]) canParallel() bool {
+	return s.downstream.canParallel()
+}

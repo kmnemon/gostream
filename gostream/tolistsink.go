@@ -1,7 +1,8 @@
 package gostream
 
 type toListSink[T any] struct {
-	list []T
+	list     []T
+	parallel bool
 }
 
 func (s *toListSink[T]) begin(size int) {
@@ -23,4 +24,9 @@ func (s *toListSink[T]) cancellationRequested() bool {
 }
 
 func (s *toListSink[T]) setDownStreamSink(downstream sink[T]) {
+}
+
+func (s *toListSink[T]) canParallel() bool {
+	s.parallel = true
+	return s.parallel
 }

@@ -6,6 +6,7 @@ type sink[T any] interface {
 	end()
 	isCancellationWasRequested() bool
 	cancellationRequested() bool
+	canParallel() bool
 
 	setDownStreamSink(sink[T])
 }
