@@ -85,6 +85,7 @@ func (p *pipeline[T]) Parallel() stream[T] {
 	s := parallelSink[T]{
 		false,
 		nil,
+		nil,
 	}
 	statelessPipe.init(p, statelessOp, &s)
 

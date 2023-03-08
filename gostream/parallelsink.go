@@ -1,6 +1,9 @@
 package gostream
 
-import "runtime"
+import (
+	"runtime"
+	"sync"
+)
 
 type parallelSink[T any] struct {
 	canparallel bool
@@ -9,8 +12,8 @@ type parallelSink[T any] struct {
 }
 
 func (s *parallelSink[T]) begin(size int) {
-	s.downstream.begin(size)
 	s.canparallel = s.canParallel()
+	s.downstream.begin(size)
 }
 
 func (s *parallelSink[T]) accept(u T) {
@@ -22,15 +25,24 @@ func (s *parallelSink[T]) accept(u T) {
 }
 
 func (s *parallelSink[T]) end() {
-	if !s.canparallel {
-		s.downstream.end()
-	} else {
+	if s.canparallel {
+		var wg sync.WaitGroup
 		cores := runtime.NumCPU()
-		for partslice := range splitSlice(s.list, cores) {
-
+		for _, slice := range splitSlice(s.list, cores) {
+			wg.Add(1)
+			go func(slice []T) {
+				defer wg.Done()
+				for _, v := range slice {
+					s.downstream.accept(v)
+				}
+			}(slice)
 		}
 
+		wg.Wait()
 	}
+
+	s.downstream.end()
+
 }
 
 func (s *parallelSink[T]) isCancellationWasRequested() bool {
@@ -52,14 +64,17 @@ func (s *parallelSink[T]) canParallel() bool {
 func splitSlice[T any](orig []T, count int) [][]T {
 	sublen := len(orig) / count
 	index := 0
-	copySlices := make([][]T, 0, sublen)
+	copySlices := make([][]T, 0, count)
 	for ; count > 1; count-- {
-		cpy := make([]T, 0, len(orig[index:index+sublen]))
+		cpy := make([]T, len(orig[index:index+sublen]))
 		copy(cpy, orig[index:index+sublen])
 		copySlices = append(copySlices, cpy)
+		index += sublen
 	}
 
-	//todo copy last one
+	cpy := make([]T, len(orig[index:]))
+	copy(cpy, orig[index:])
+	copySlices = append(copySlices, cpy)
 
-	return nil
+	return copySlices
 }

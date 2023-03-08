@@ -1,7 +1,10 @@
 package gostream
 
 import (
+	"math/rand"
+	"sort"
 	"testing"
+	"time"
 )
 
 type A struct {
@@ -10,7 +13,7 @@ type A struct {
 }
 
 func TestParallel(t *testing.T) {
-	a := []int{6, 5, 3, 4, 5}
+	a := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
 
 	x := StreamOf(a).
 		Parallel().
@@ -19,7 +22,8 @@ func TestParallel(t *testing.T) {
 		}).
 		ToList()
 
-	expect := []int{7, 6, 4, 5, 6}
+	expect := []int{2, 3, 4, 5, 6, 7, 8, 9, 10}
+	sort.Ints(x)
 
 	if !equalSliceHelper(expect, x) {
 		t.Error("Parallel operator has some problem")
@@ -196,4 +200,15 @@ func equalSliceHelper[T comparable](a, b []T) bool {
 	}
 
 	return true
+}
+
+func BenchmarkParallel(b *testing.B) {
+	rand.Seed(time.Now().Unix())
+	a := rand.Perm(1000000)
+
+	StreamOf(a).
+		Map(func(x int) int {
+			return x + 1
+		}).
+		ToList()
 }
