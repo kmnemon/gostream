@@ -6,6 +6,10 @@ go get github.com/kmnemon/gostream
 ## Features
 - Support Slice and Map
   
+- Parallel() stream[T]  
+this option is a suggestion that the program should run in parallel, but not a promise.  
+careful use it, do benchmark first.  
+  
 - Map(func(T) T) stream[T]
 - Reduce(func(T, T) T) stream[T]
 - ReduceWithInitValue(T, func(T, T) T) stream[T]
@@ -17,7 +21,7 @@ go get github.com/kmnemon/gostream
 - FindFirst() T
 - ToList() []T
 - Distinct() stream[T]
--	DistinctWith(func(T, T) bool) stream[T]
+- DistinctWith(func(T, T) bool) stream[T]
 
 ## Example
 ```
@@ -32,7 +36,7 @@ go get github.com/kmnemon/gostream
   fmt.Println(x)
 ```
 -----------
-[7 12 15 19 24]
+[7 12 15 19 24]  
 
 ```
 ages := map[string]int{
@@ -47,10 +51,10 @@ ages := map[string]int{
 	}).ToList()
 ```
 -----------
-{"r": 1001},
-{"v": 2001},
-{"c": 501}
+{"r": 1001},  
+{"v": 2001},  
+{"c": 501}  
 
 ## License
 
-This software is released under the GPL-3.0 license.
+This software is released under the GPL-3.0 license.  
