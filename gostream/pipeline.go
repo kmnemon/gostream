@@ -103,29 +103,27 @@ func (p *pipeline[T]) Map(mapper func(T) T) stream[T] {
 	return &statelessPipe
 }
 
-func (p *pipeline[T]) Reduce(binaryOperator func(T, T) T) stream[T] {
-	statelessPipe := pipeline[T]{}
+func (p *pipeline[T]) Reduce(binaryOperator func(T, T) T) T {
 	s := reduceSink[T]{
 		binaryOperator: binaryOperator,
 		downstream:     nil,
 		isFirstValue:   true,
 	}
-	statelessPipe.init(p, statelessOp, &s)
 
-	return &statelessPipe
+	p.evaluate(&s)
+	return s.result
 }
 
-func (p *pipeline[T]) ReduceWithInitValue(i T, binaryOperator func(T, T) T) stream[T] {
-	statelessPipe := pipeline[T]{}
+func (p *pipeline[T]) ReduceWithInitValue(i T, binaryOperator func(T, T) T) T {
 	s := reduceSink[T]{
 		binaryOperator: binaryOperator,
 		downstream:     nil,
-		i:              i,
+		result:         i,
 		isFirstValue:   false,
 	}
-	statelessPipe.init(p, statelessOp, &s)
 
-	return &statelessPipe
+	p.evaluate(&s)
+	return s.result
 }
 
 func (p *pipeline[T]) ForEach(mapper func(T)) {

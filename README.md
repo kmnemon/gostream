@@ -25,18 +25,29 @@ careful use it, do benchmark first.
 
 ## Example
 ```
+	a := []int{6, 5, 3, 4, 5}
+
+	x := StreamOf(a).
+		Sorted().
+		ToList()
+
+  fmt.Println(x)
+```
+-----------
+[3, 4, 5, 5, 6]
+
+```
   a := []int{6, 5, 3, 4, 5}
 
   x := StreamOf(a).  
     ReduceWithInitValue(1, func(x int, y int) int {  
       return x + y  
-    }).  
-    ToList()  
+    })
 
   fmt.Println(x)
 ```
 -----------
-[7 12 15 19 24]  
+24
 
 ```
 ages := map[string]int{

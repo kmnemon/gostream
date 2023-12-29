@@ -3,8 +3,8 @@ package gostream
 type stream[T any] interface {
 	Parallel() stream[T]
 	Map(func(T) T) stream[T]
-	Reduce(func(T, T) T) stream[T]
-	ReduceWithInitValue(T, func(T, T) T) stream[T]
+	Reduce(func(T, T) T) T
+	ReduceWithInitValue(T, func(T, T) T) T
 	ForEach(func(T))
 	Sorted() stream[T]
 	SortedWith(func(T, T) bool) stream[T]

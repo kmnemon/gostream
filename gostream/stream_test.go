@@ -89,11 +89,9 @@ func TestReduce(t *testing.T) {
 	x := StreamOf(a).
 		Reduce(func(x int, y int) int {
 			return x + y
-		}).
-		ToList()
+		})
 
-	expect := []int{6, 11, 14, 18, 23}
-	if !equalSliceHelper(expect, x) {
+	if x != 23 {
 		t.Error("Reduce operator has some problem")
 	}
 }
@@ -104,12 +102,10 @@ func TestReduceWithInitValue(t *testing.T) {
 	x := StreamOf(a).
 		ReduceWithInitValue(1, func(x int, y int) int {
 			return x + y
-		}).
-		ToList()
+		})
 
-	expect := []int{7, 12, 15, 19, 24}
-	if !equalSliceHelper(expect, x) {
-		t.Error("ReduceWithInitValue operator has some problem")
+	if x != 24 {
+		t.Error("Reduce operator has some problem")
 	}
 }
 
@@ -185,6 +181,21 @@ func TestFindFirst(t *testing.T) {
 
 	if !(x == 6) {
 		t.Error("FindFirst operator has some problem")
+	}
+}
+
+func TestForEach(t *testing.T) {
+	a := []int{6, 5, 3, 4, 5}
+	r := []int{}
+
+	StreamOf(a).
+		ForEach(func(i int) {
+			r = append(r, i+1)
+		})
+
+	expect := []int{7, 6, 4, 5, 6}
+	if !equalSliceHelper(expect, r) {
+		t.Error("foreach operator has some problem")
 	}
 }
 
