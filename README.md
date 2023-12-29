@@ -11,8 +11,8 @@ this option is a suggestion that the program should run in parallel, but not a p
 careful use it, do benchmark first.  
   
 - Map(func(T) T) stream[T]
-- Reduce(func(T, T) T) stream[T]
-- ReduceWithInitValue(T, func(T, T) T) stream[T]
+- Reduce(func(T, T) T) T
+- ReduceWithInitValue(T, func(T, T) T) T
 - ForEach(func(T))
 - Sorted() stream[T]
 - SortedWith(func(T, T) bool) stream[T]
